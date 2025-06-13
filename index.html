@@ -9,7 +9,7 @@
   <div id="stats">
     <p>Lade Daten...</p>
   </div>
-<p>covw</p>
+<p>Das hat funktioniert </p>
   <script>
     const username = "Friesenjunge226";
     const proxyUrl = "https://api.allorigins.win/get?url=";
@@ -41,4 +41,8 @@
       })
       .catch(err => {
         statsDiv.innerHTML = `<p style="color:red;">Fehler beim Laden von Daten: ${err.message}</p>`;
-        console.error("Fe
+        console.error("Fehlerdetails:", err);
+      });
+  </script>
+</body>
+</html>
