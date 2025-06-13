@@ -1,47 +1,26 @@
-<!DOCTYPE html>
+1<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>iFixit Stats – Friesenjunge226</title>
+  <meta charset="UTF-8">
+  <title>iFixit Stats Debug</title>
 </head>
 <body>
-  <h1>iFixit Stats von Friesenjunge226</h1>
-  <div id="stats">
-    <p>Lade Daten...</p>
-  </div>
-<p>Das hat funktioniert </p>
+  <h1>Debugging iFixit Stats</h1>
+  <pre id="output">Lade...</pre>
+
   <script>
     const username = "Friesenjunge226";
     const proxyUrl = "https://api.allorigins.win/get?url=";
     const apiUrl = `https://www.ifixit.com/api/2.0/users/${username}`;
-    const statsDiv = document.getElementById("stats");
+    const output = document.getElementById("output");
 
     fetch(proxyUrl + encodeURIComponent(apiUrl))
-      .then(res => {
-        if (!res.ok) throw new Error("Antwort vom Proxy war nicht ok.");
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        if (!data.contents) throw new Error("Leere Antwort vom iFixit-Proxy.");
-        const user = JSON.parse(data.contents);
-
-        if (!user || !user.badge_counts) {
-          throw new Error("Ungültige Nutzerdaten erhalten.");
-        }
-
-        statsDiv.innerHTML = `
-          <p><strong>Benutzername:</strong> ${user.username}</p>
-          <p><strong>Reputation:</strong> ${user.reputation}</p>
-          <p><strong>Badges:</strong> ${user.badge_counts.total} 
-          (Gold: ${user.badge_counts.gold}, 
-           Silber: ${user.badge_counts.silver}, 
-           Bronze: ${user.badge_counts.bronze})</p>
-          <p><strong>iFixit-Profil:</strong> <a href="https://www.ifixit.com/User/${user.userid}" target="_blank">Hier klicken</a></p>
-        `;
+        output.textContent = "Rohdaten vom Proxy:\n\n" + data.contents;
       })
       .catch(err => {
-        statsDiv.innerHTML = `<p style="color:red;">Fehler beim Laden von Daten: ${err.message}</p>`;
-        console.error("Fehlerdetails:", err);
+        output.textContent = "Fehler beim Laden:\n\n" + err.message;
       });
   </script>
 </body>
