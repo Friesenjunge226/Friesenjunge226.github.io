@@ -1,27 +1,13 @@
-1<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>iFixit Stats Debug</title>
+  <meta charset="UTF-8" />
+  <title>Friesenjunge226 – iFixit Stats</title>
 </head>
 <body>
-  <h1>Debugging iFixit Stats</h1>
-  <pre id="output">Lade...</pre>
-
-  <script>
-    const username = "Friesenjunge226";
-    const proxyUrl = "https://api.allorigins.win/get?url=";
-    const apiUrl = `https://www.ifixit.com/api/2.0/users/${username}`;
-    const output = document.getElementById("output");
-
-    fetch(proxyUrl + encodeURIComponent(apiUrl))
-      .then(res => res.json())
-      .then(data => {
-        output.textContent = "Rohdaten vom Proxy:\n\n" + data.contents;
-      })
-      .catch(err => {
-        output.textContent = "Fehler beim Laden:\n\n" + err.message;
-      });
-  </script>
+  <h1>iFixit Stats für Friesenjunge226</h1>
+  <pre id="ifixit-stats">Lade Daten...</pre>
+  <p>working</p>
+  <script src="stats.js"></script>
 </body>
 </html>
