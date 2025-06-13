@@ -1,22 +1,25 @@
-const userid = 4502323;
-
-fetch(`https://ifixit-guide-api.ifixit.com/api/v2/users/${userid}`)
+fetch("https://www.ifixit.com/api/2.0/users/4502323")
   .then(response => {
-    if (!response.ok) throw new Error("Netzwerkantwort war nicht okay");
+    if (!response.ok) {
+      throw new Error("Antwort nicht okay");
+    }
     return response.json();
   })
   .then(data => {
-    const statsDiv = document.getElementById("stats");
-    statsDiv.innerHTML = `
-      <p><strong>Benutzername:</strong> ${data.username}</p>
-      <p><strong>Reputation:</strong> ${data.reputation}</p>
-      <p><strong>Mitglied seit:</strong> ${new Date(data.join_date * 1000).toLocaleDateString('de-DE')}</p>
-      <p><strong>Gold-Badges:</strong> ${data.badge_counts.gold}</p>
-      <p><strong>Silber-Badges:</strong> ${data.badge_counts.silver}</p>
-      <p><strong>Bronze-Badges:</strong> ${data.badge_counts.bronze}</p>
-      <p><strong>Zusammenfassung:</strong> ${data.summary}</p>
+    const output = `
+Benutzername: ${data.username}
+Reputation: ${data.reputation}
+Badges: ${data.badge_counts.total} total
+Bronze: ${data.badge_counts.bronze}
+Silber: ${data.badge_counts.silver}
+Gold: ${data.badge_counts.gold}
+Beigetreten: ${new Date(data.join_date * 1000).toLocaleDateString()}
+Teams: ${data.teams.length > 0 ? data.teams.join(", ") : "Keine"}
+Profilbild: ${data.image.original}
+Link: https://www.ifixit.com/User/${data.username}
     `;
+    document.getElementById("ifixit-stats").textContent = output;
   })
   .catch(error => {
-    document.getElementById("stats").textContent = "Fehler beim Laden der Daten: " + error.message;
+    document.getElementById("ifixit-stats").textContent = "Fehler beim Laden der Daten:\n" + error;
   });
