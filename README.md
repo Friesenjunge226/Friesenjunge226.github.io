@@ -1,1 +1,1 @@
-# Friesenjunge226.github.io
+# iFixit Stats Page
