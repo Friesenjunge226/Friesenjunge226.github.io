@@ -1,25 +1,22 @@
-fetch("https://www.ifixit.com/api/2.0/users/4502323")
+const proxy = "https://corsproxy.io/?";
+const targetURL = "https://www.ifixit.com/api/2.0/users/4502323";
+
+fetch(proxy + encodeURIComponent(targetURL))
   .then(response => {
-    if (!response.ok) {
-      throw new Error("Antwort nicht okay");
-    }
+    if (!response.ok) throw new Error("Antwort war nicht OK.");
     return response.json();
   })
   .then(data => {
     const output = `
-Benutzername: ${data.username}
-Reputation: ${data.reputation}
-Badges: ${data.badge_counts.total} total
-Bronze: ${data.badge_counts.bronze}
-Silber: ${data.badge_counts.silver}
-Gold: ${data.badge_counts.gold}
-Beigetreten: ${new Date(data.join_date * 1000).toLocaleDateString()}
-Teams: ${data.teams.length > 0 ? data.teams.join(", ") : "Keine"}
-Profilbild: ${data.image.original}
-Link: https://www.ifixit.com/User/${data.username}
+      <p><strong>Benutzername:</strong> ${data.username}</p>
+      <p><strong>Reputation:</strong> ${data.reputation}</p>
+      <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+      <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+      <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
     `;
-    document.getElementById("ifixit-stats").textContent = output;
+    document.getElementById("output").innerHTML = output;
   })
   .catch(error => {
-    document.getElementById("ifixit-stats").textContent = "Fehler beim Laden der Daten:\n" + error;
+    document.getElementById("output").textContent = "Fehler beim Laden von Daten: " + error.message;
+    console.error(error);
   });
