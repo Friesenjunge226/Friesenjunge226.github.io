@@ -15,7 +15,7 @@
 
     fetch(proxy + encodeURIComponent(targetURL))
       .then(response => {
-        if (!response.ok) throw new Error("Antwort war nicht OK.");
+        if (!response.ok) throw new Error("Ein Fehler ist aufgetreten. Drücke F5, um die Webseite erneut zu laden oder komm später noch mal wieder vorbei.");
         return response.json();
       })
       .then(data => {
@@ -34,7 +34,7 @@
       });
   </script>
   <style>
-    body {background-color: #000000; color: #ffffff; max-width: 600px; margin: auto; padding: 10px;}
+    body {background-color: #000000; color: #ffffff; width: 600px; margin: auto; padding: 10px;}
     
   </style>
 </body>
