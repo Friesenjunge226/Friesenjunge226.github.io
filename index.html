@@ -20,7 +20,7 @@
       })
       .then(data => 
         const output = `
-          <p><strong>Benutzername:</strong> ${data.username} <img src="${data.440x330}" alt="Profile Picture" width="440" height="430"></p>
+          <p><strong>Benutzername:</strong> ${data.username}</p>
           <p><strong>Reputation:</strong> ${data.reputation}</p>
           <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
           <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
