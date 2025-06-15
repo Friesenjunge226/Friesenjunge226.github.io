@@ -18,13 +18,15 @@
         if (!response.ok) throw new Error("Ein Fehler ist aufgetreten. Drücke F5, um die Webseite erneut zu laden oder komm später noch mal wieder vorbei.");
         return response.json();
       })
-      .then(data => {
+      .then(data => 
         const output = `
-          <p><strong>Benutzername:</strong> ${data.username}</p>
+          <p><strong>Benutzername:</strong> ${data.username} <img src="${data.440x330}" alt="Profile Picture" width="440" height="430"></p>
           <p><strong>Reputation:</strong> ${data.reputation}</p>
           <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
           <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+          <p><strong>Teams: </p>
           <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
+          
         `;
         document.getElementById("output").innerHTML = output;
       })
