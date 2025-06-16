@@ -3,11 +3,11 @@
 <head>
   <link rel="stylesheet" href="style.css">
   <meta charset="UTF-8">
-  <title>iFixit Stats für Friesenjunge226</title>
+  <title>iFixit Daten</title>
 </head>
 <body>
-  <h1>iFixit Stats für Friesenjunge226</h1>
-  <p id="output">Lade Daten...</p> 
+  <h1 id="header">Lade...</h1>
+  <p id="usrdata">Lade Daten...</p> 
   <script>
     const proxy = "https://corsproxy.io/?";
     const targetURL = "https://www.ifixit.com/api/2.0/users/1714649769";
@@ -15,7 +15,6 @@
     const knownTeams = {
   46701: "German Translators",
   1: "iFixit",
-  67890: "Support Heroes",
   4580917: "Made un Germany"
   // hier kannst du weitere Team-IDs und Namen eintragen
 };
@@ -34,7 +33,7 @@ fetch(proxy + encodeURIComponent(targetURL))
       .map(id => knownTeams[id] || `Team-ID ${id}`)
       .join(", ");
 
-    const output = `
+    const header = `
       <p><strong>Benutzername:</strong> ${data.username}</p>
       <p><strong>Reputation:</strong> ${data.reputation}</p>
       <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
@@ -42,8 +41,10 @@ fetch(proxy + encodeURIComponent(targetURL))
       <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
       <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
     `;
+    const header = `iFixit Stats von ${data.username}`
 
-    document.getElementById("output").innerHTML = output;
+    document.getElementById("usrdata").innerHTML = usrdata;
+    document.getElementById("header").innerHTML = header;
   })
   .catch(error => {
     document.getElementById("output").textContent = "Fehler beim Laden von Daten: " + error.message;
