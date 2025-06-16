@@ -13,7 +13,7 @@
     const proxy = "https://corsproxy.io/?";
     const targetURL = "https://www.ifixit.com/api/2.0/users/4502323";
 
-    fetch(encodeURIComponent(targetURL))
+    fetch(proxy + encodeURIComponent(targetURL))
       .then(response => {
         if (!response.ok) throw new Error("Antwort war nicht OK.");
         return response.json();
