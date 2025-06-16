@@ -2,126 +2,132 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>iFixit User Stats</title>
+  <title>iFixit Daten</title>
   <style>
-    body {
-      background-color: #000000;
-      color: #ffffff;
-      padding: 20px 100px;
-      font-family: Arial, sans-serif;
+    :root {
+      --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
     }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      padding: 20px 100px;
+      font-family: sans-serif;
+    }
+
     h1 {
       font-size: 3em;
-      background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
+      background: var(--header-gradient);
       background-size: 1000% 1000%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shine 60s ease-in-out infinite;
-      margin-bottom: 0;
+      animation: shine 300s ease-in-out infinite;
     }
+
     @keyframes shine {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-    #inputBox {
-      margin: 15px 0;
-    }
-    input {
+
+    input[type="text"] {
+      padding: 0.5em;
       font-size: 1em;
-      padding: 8px;
+      border: 2px solid #ff00cc;
+      background-color: #111;
+      color: white;
+      border-radius: 5px;
+      margin-bottom: 1em;
       width: 300px;
-      border-radius: 5px;
-      border: none;
-      outline: none;
-      color: white;
-      border-color: white;
-      background-color: black;
+      border-width: 5px;
     }
+
     button {
-      font-size: 1em;
-      padding: 8px 16px;
-      margin-left: 8px;
-      cursor: pointer;
-      border-radius: 5px;
-      border: none;
-      background-color: #299c51;
+      margin-left: 10px;
+      padding: 0.5em 1em;
+      background-color: #3333ff;
       color: white;
-      transition: background-color 0.3s;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    button:hover {
-      background-color: #299c51;
-    }
-    #usrdata p {
-      margin: 6px 0;
+
+    #usrdata {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
+
   <h1 id="header">Lade...</h1>
-  <div id="inputBox">
-    <input type="text" id="userIDInput" placeholder="UserID eingeben (z.B. 4502323)" />
-    <button id="loadBtn">Laden</button>
-  </div>
-  <div id="usrdata">Lade Daten...</div>
+
+  <input id="userid-input" type="text" placeholder="iFixit User-ID eingeben..." />
+  <button onclick="loadUser()">Laden</button>
+
+  <p id="usrdata">Lade Daten...</p>
 
   <script>
     const proxy = "https://corsproxy.io/?";
     const knownTeams = {
       46701: "German Translators",
       1: "iFixit",
-      4580917: "Made un Germany"
+      4580917: "Made in Germany"
     };
 
-    const defaultUserID = "4502323"; // Deine Default-ID
-
-    async function loadUserData(userID) {
-      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
-      document.getElementById("header").textContent = "Lade...";
-      document.getElementById("usrdata").textContent = "Lade Daten...";
-      try {
-        const response = await fetch(proxy + encodeURIComponent(targetURL));
-        if (!response.ok) throw new Error("Antwort war nicht OK.");
-        const data = await response.json();
-
-        const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
-        const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
-
-        const usrdata = `
-          <p><strong>Benutzername:</strong> ${data.username}</p>
-          <p><strong>Reputation:</strong> ${data.reputation}</p>
-          <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
-          <p><strong>Teams:</strong> ${teamNames}</p>
-          <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
-          <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank" rel="noopener noreferrer">Hier klicken</a></p>
-        `;
-        const header = `iFixit Stats von ${data.username}`;
-
-        document.getElementById("usrdata").innerHTML = usrdata;
-        document.getElementById("header").textContent = header;
-      } catch (error) {
-        document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
-        document.getElementById("header").textContent = "Fehler";
-        console.error(error);
-      }
+    // === Gradient speichern/laden ===
+    const savedGradient = localStorage.getItem("ifixitGradient");
+    if (savedGradient) {
+      document.documentElement.style.setProperty('--header-gradient', savedGradient);
     }
 
-    document.getElementById("loadBtn").addEventListener("click", () => {
-      const input = document.getElementById("userIDInput").value.trim();
-      if (input) {
-        loadUserData(input);
-      }
-    });
+    // === User-ID speichern/laden ===
+    const input = document.getElementById("userid-input");
+    const savedID = localStorage.getItem("ifixitUserID");
+    if (savedID) {
+      input.value = savedID;
+      fetchUserData(savedID);
+    } else {
+      fetchUserData("4502323"); // Standard: Friesenjunge
+    }
 
-    // Beim Enter im Input auch laden
-    document.getElementById("userIDInput").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        document.getElementById("loadBtn").click();
-      }
-    });
+    function loadUser() {
+      const userID = input.value.trim();
+      if (userID === "") return;
+      localStorage.setItem("ifixitUserID", userID);
+      fetchUserData(userID);
+    }
 
-    // Default laden
-    loadUserData(defaultUserID);
+    function fetchUserData(userID) {
+      document.getElementById("header").textContent = "Lade...";
+      document.getElementById("usrdata").textContent = "Lade Daten...";
+
+      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
+      fetch(proxy + encodeURIComponent(targetURL))
+        .then(response => {
+          if (!response.ok) throw new Error("Antwort war nicht OK.");
+          return response.json();
+        })
+        .then(data => {
+          const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
+          const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
+          const usrdata = `
+            <p><strong>Benutzername:</strong> ${data.username}</p>
+            <p><strong>Reputation:</strong> ${data.reputation}</p>
+            <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+            <p><strong>Teams:</strong> ${teamNames}</p>
+            <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+            <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
+          `;
+          document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
+          document.getElementById("usrdata").innerHTML = usrdata;
+        })
+        .catch(error => {
+          document.getElementById("header").textContent = "Fehler!";
+          document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
+          console.error(error);
+        });
+    }
   </script>
+
 </body>
 </html>
