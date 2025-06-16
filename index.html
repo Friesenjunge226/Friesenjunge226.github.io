@@ -66,6 +66,7 @@
 
   <p id="usrdata">Lade Daten...</p>
 
+  
   <script>
     const proxy = "https://corsproxy.io/?";
     const knownTeams = {
@@ -75,9 +76,9 @@
     };
 
     // === Gradient speichern/laden ===
-    const savedGradient = localStorage.getItem("ifixitGradient");
-    if (savedGradient) {
-      document.documentElement.style.setProperty('--header-gradient', savedGradient);
+    function saveGradient() {
+  const currentGradient = getComputedStyle(document.documentElement).getPropertyValue('--header-gradient');
+  localStorage.setItem("ifixitGradient", currentGradient);
     }
 
     // === User-ID speichern/laden ===
