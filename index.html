@@ -41,10 +41,10 @@ fetch(proxy + encodeURIComponent(targetURL))
       <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
       <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
     `;
-    const header = `iFixit Stats von ${data.username}`
+    const headerText = `iFixit Stats von ${data.username}`
 
     document.getElementById("usrdata").innerHTML = usrdata;
-    document.getElementById("header").innerHTML = header;
+    document.getElementById("header").innerHTML = headerText;
   })
   .catch(error => {
     document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
