@@ -2,7 +2,7 @@ name: Tägliches iFixit-Update
 
 on:
   schedule:
-    - cron: '59 21 * * *'  # Jeden Tag um 23:59 UTC
+    - cron: '59 21 * * *'  # Jeden Tag um 23:59 MESZ
   workflow_dispatch:       # Manuell auslösbar
 
 jobs:
