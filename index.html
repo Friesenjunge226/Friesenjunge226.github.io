@@ -1,85 +1,124 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <link rel="stylesheet" href="style.css">
-  <meta charset="UTF-8">
-  <title>iFixit Daten</title>
+  <meta charset="UTF-8" />
+  <title>iFixit User Stats</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      padding: 20px 100px;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      font-size: 3em;
+      background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
+      background-size: 1000% 1000%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 60s ease-in-out infinite;
+      margin-bottom: 0;
+    }
+    @keyframes shine {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    #inputBox {
+      margin: 15px 0;
+    }
+    input {
+      font-size: 1em;
+      padding: 8px;
+      width: 300px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+    button {
+      font-size: 1em;
+      padding: 8px 16px;
+      margin-left: 8px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+      background-color: #3333ff;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #5555ff;
+    }
+    #usrdata p {
+      margin: 6px 0;
+    }
+  </style>
 </head>
 <body>
   <h1 id="header">Lade...</h1>
-  <p id="usrdata">Lade Daten...</p> 
+  <div id="inputBox">
+    <input type="text" id="userIDInput" placeholder="UserID eingeben (z.B. 4502323)" />
+    <button id="loadBtn">Laden</button>
+  </div>
+  <div id="usrdata">Lade Daten...</div>
+
   <script>
     const proxy = "https://corsproxy.io/?";
-    const targetURL = "https://www.ifixit.com/api/2.0/users/4502323";
-
     const knownTeams = {
-  46701: "German Translators",
-  1: "iFixit",
-  4580917: "Made un Germany"
-  // hier kannst du weitere Team-IDs und Namen eintragen
-};
+      46701: "German Translators",
+      1: "iFixit",
+      4580917: "Made un Germany"
+    };
 
-fetch(proxy + encodeURIComponent(targetURL))
-  .then(response => {
-    if (!response.ok) throw new Error(response);
-    return response.json();
-  })
-  .then(data => {
-    // data.teams annehmen als Array von IDs (oder string, dann anpassen)
-    const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
+    const defaultUserID = "4502323"; // Deine Default-ID
 
-    // Teamnamen filtern und zusammenbauen
-    const teamNames = teamIDs
-      .map(id => knownTeams[id] || `Team-ID ${id}`)
-      .join(", ");
+    async function loadUserData(userID) {
+      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
+      document.getElementById("header").textContent = "Lade...";
+      document.getElementById("usrdata").textContent = "Lade Daten...";
+      try {
+        const response = await fetch(proxy + encodeURIComponent(targetURL));
+        if (!response.ok) throw new Error("Antwort war nicht OK.");
+        const data = await response.json();
 
-    const usrdata = `
-      <p><strong>Benutzername:</strong> ${data.username}</p>
-      <p><strong>Reputation:</strong> ${data.reputation}</p>
-      <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
-      <p><strong>Teams:</strong> ${teamNames}</p>
-      <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
-      <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
-    `;
-    const headerText = `iFixit Stats von ${data.username}`
+        const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
+        const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
 
-    document.getElementById("usrdata").innerHTML = usrdata;
-    document.getElementById("header").innerHTML = headerText;
-  })
-  .catch(error => {
-    document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
-    console.error(error);
-  });
+        const usrdata = `
+          <p><strong>Benutzername:</strong> ${data.username}</p>
+          <p><strong>Reputation:</strong> ${data.reputation}</p>
+          <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+          <p><strong>Teams:</strong> ${teamNames}</p>
+          <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+          <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank" rel="noopener noreferrer">Hier klicken</a></p>
+        `;
+        const header = `iFixit Stats von ${data.username}`;
+
+        document.getElementById("usrdata").innerHTML = usrdata;
+        document.getElementById("header").textContent = header;
+      } catch (error) {
+        document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
+        document.getElementById("header").textContent = "Fehler";
+        console.error(error);
+      }
+    }
+
+    document.getElementById("loadBtn").addEventListener("click", () => {
+      const input = document.getElementById("userIDInput").value.trim();
+      if (input) {
+        loadUserData(input);
+      }
+    });
+
+    // Beim Enter im Input auch laden
+    document.getElementById("userIDInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        document.getElementById("loadBtn").click();
+      }
+    });
+
+    // Default laden
+    loadUserData(defaultUserID);
   </script>
-  <style>
-  body{
-    background-color: rgb(0, 0, 0);
-    color: rgb(255, 255, 255);
-    padding-top: 20px;
-    padding-left: 100px;
-    margin: auto;
-    align: middle;
-  }
-  h1 {
-  font-size: 3em;
-  background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
-  background-size: 1000% 1000%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shine 60s ease-in-out infinite;
-}
-    
-@keyframes shine {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-  
-}</style>
 </body>
 </html>
