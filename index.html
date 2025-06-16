@@ -33,7 +33,7 @@ fetch(proxy + encodeURIComponent(targetURL))
       .map(id => knownTeams[id] || `Team-ID ${id}`)
       .join(", ");
 
-    const header = `
+    const usrdata = `
       <p><strong>Benutzername:</strong> ${data.username}</p>
       <p><strong>Reputation:</strong> ${data.reputation}</p>
       <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
