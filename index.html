@@ -47,7 +47,7 @@ fetch(proxy + encodeURIComponent(targetURL))
     document.getElementById("header").innerHTML = header;
   })
   .catch(error => {
-    document.getElementById("output").textContent = "Fehler beim Laden von Daten: " + error.message;
+    document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
     console.error(error);
   });
   </script>
