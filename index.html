@@ -10,7 +10,7 @@
   <p id="usrdata">Lade Daten...</p> 
   <script>
     const proxy = "https://corsproxy.io/?";
-    const targetURL = "https://www.ifixit.com/api/2.0/users/1714649769";
+    const targetURL = "https://www.ifixit.com/api/2.0/users/4502323";
 
     const knownTeams = {
   46701: "German Translators",
@@ -21,7 +21,7 @@
 
 fetch(proxy + encodeURIComponent(targetURL))
   .then(response => {
-    if (!response.ok) throw new Error("Antwort war nicht OK.");
+    if (!response.ok) throw new Error(response);
     return response.json();
   })
   .then(data => {
