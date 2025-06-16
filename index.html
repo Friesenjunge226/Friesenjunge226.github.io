@@ -7,8 +7,7 @@
 </head>
 <body>
   <h1>iFixit Stats für Friesenjunge226</h1>
-  <div id="output">Lade Daten...</div>
-
+  <p id="output">Lade Daten...</p> 
   <script>
     const proxy = "https://corsproxy.io/?";
     const targetURL = "https://www.ifixit.com/api/2.0/users/4502323";
@@ -23,9 +22,10 @@
           <p><strong>Benutzername:</strong> ${data.username}</p>
           <p><strong>Reputation:</strong> ${data.reputation}</p>
           <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+          <p><strong>Team ID</strong> ${data.teams}</p>
           <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
           <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
-        `;
+          `;
         document.getElementById("output").innerHTML = output;
       })
       .catch(error => {
@@ -33,5 +33,32 @@
         console.error(error);
       });
   </script>
+  <style>
+  body{
+    background-color: rgb(0, 0, 0)
+    color: rgb(255, 255, 255)
+    padding-top: 20px
+  }
+  h1 {
+  font-size: 3em;
+  background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
+  background-size: 1000% 1000%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 8s ease-in-out infinite;
+}
+    
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+  
+}</style>
 </body>
 </html>
