@@ -65,68 +65,74 @@
   <p id="usrdata">Lade Daten...</p>
 
   <script>
-    const proxy = "https://corsproxy.io/?";
-    const knownTeams = {
-      46701: "German Translators",
-      1: "iFixit",
-      4580917: "Made in Germany"
-    };
+  const proxy = "https://corsproxy.io/?";
+  const knownTeams = {
+    46701: "German Translators",
+    1: "iFixit",
+    4580917: "Made in Germany"
+  };
 
-    const input = document.getElementById("userid-input");
+  const input = document.getElementById("userid-input");
 
-    // === Gradient laden ===
-    const savedGradient = localStorage.getItem("ifixitGradient");
-    if (savedGradient) {
-      document.documentElement.style.setProperty('--header-gradient', savedGradient);
-    }
+  // Gradient beim Laden setzen
+  const savedGradient = localStorage.getItem("ifixitGradient");
+  if (savedGradient) {
+    document.documentElement.style.setProperty('--header-gradient', savedGradient);
+  }
 
-    // === User-ID laden ===
-    const savedID = localStorage.getItem("ifixitUserID");
-    if (savedID) {
-      input.value = savedID;
-      fetchUserData(savedID);
-    } else {
-      fetchUserData("4502323"); // Standard-User: Friesenjunge
-    }
+  // User-ID beim Laden setzen
+  const savedID = localStorage.getItem("ifixitUserID");
+  if (savedID) {
+    input.value = savedID;
+    fetchUserData(savedID);
+  } else {
+    fetchUserData("4502323"); // Standard: Friesenjunge
+  }
 
-    function loadUser() {
-      const userID = input.value.trim();
-      if (userID === "") return;
-      localStorage.setItem("ifixitUserID", userID);
-      fetchUserData(userID);
-    }
+  function loadUser() {
+    const userID = input.value.trim();
+    if (userID === "") return;
+    localStorage.setItem("ifixitUserID", userID);
+    fetchUserData(userID);
+  }
 
-    function fetchUserData(userID) {
-      document.getElementById("header").textContent = "Lade...";
-      document.getElementById("usrdata").textContent = "Lade Daten...";
+  function fetchUserData(userID) {
+    document.getElementById("header").textContent = "Lade...";
+    document.getElementById("usrdata").textContent = "Lade Daten...";
 
-      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
-      fetch(proxy + encodeURIComponent(targetURL))
-        .then(response => {
-          if (!response.ok) throw new Error("Antwort war nicht OK.");
-          return response.json();
-        })
-        .then(data => {
-          const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
-          const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
-          const usrdata = `
-            <p><strong>Benutzername:</strong> ${data.username}</p>
-            <p><strong>Reputation:</strong> ${data.reputation}</p>
-            <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
-            <p><strong>Teams:</strong> ${teamNames}</p>
-            <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
-            <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
-          `;
-          document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
-          document.getElementById("usrdata").innerHTML = usrdata;
-        })
-        .catch(error => {
-          document.getElementById("header").textContent = "Fehler!";
-          document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
-          console.error(error);
-        });
-    }
-    }
+    const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
+    fetch(proxy + encodeURIComponent(targetURL))
+      .then(response => {
+        if (!response.ok) throw new Error("Antwort war nicht OK.");
+        return response.json();
+      })
+      .then(data => {
+        const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
+        const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
+        const usrdata = `
+          <p><strong>Benutzername:</strong> ${data.username}</p>
+          <p><strong>Reputation:</strong> ${data.reputation}</p>
+          <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+          <p><strong>Teams:</strong> ${teamNames}</p>
+          <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+          <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
+        `;
+        document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
+        document.getElementById("usrdata").innerHTML = usrdata;
+      })
+      .catch(error => {
+        document.getElementById("header").textContent = "Fehler!";
+        document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
+        console.error(error);
+      });
+  }
+
+  // Gradient speichern, wenn das Fenster verlassen wird
+  window.addEventListener("beforeunload", () => {
+    const currentGradient = getComputedStyle(document.documentElement)
+      .getPropertyValue("--header-gradient");
+    localStorage.setItem("ifixitGradient", currentGradient.trim());
+  });
   </script>
 
 </body>
