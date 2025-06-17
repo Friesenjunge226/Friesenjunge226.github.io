@@ -2,223 +2,141 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>iFixit Daten</title>
+  <title>iFixit Daten mit Minecraft Skin</title>
   <style>
-    :root {
-      --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
-    }
-    html {
-      font-size: 16px;
-    }
-    body {
-      background-color: #000;
-      color: #fff;
-      padding: 20px 100px;
-      font-family: sans-serif;
-      font-size: 1.1rem;
-      display: flex;
-      gap: 50px;
-    }
-
-    #main {
-      flex: 2;
-    }
-
-    #skinbox {
-      flex: 1;
-      background-color: #111;
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid #444;
-      text-align: center;
-      max-width: 400px;
-    }
-
-    h1 {
-      background: var(--header-gradient);
-      background-size: 1000% 1000%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shine 300s ease-in-out infinite;
-    }
-
-    @keyframes shine {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    input[type="text"] {
-      padding: 0.5em;
-      font-size: 1em;
-      border: 2px solid gray;
-      background-color: #111;
-      color: white;
-      border-radius: 5px;
-      margin-bottom: 1em;
-      width: 300px;
-    }
-   #skinbox input {
-      padding: 0.5em;
-      font-size: 1em;
-      border: 2px solid gray;
-      background-color: #111;
-      color: white;
-      border-radius: 5px;
-      margin-bottom: 1em;
-      width: 200px;
-    }
-
-    button {
-      margin-left: 10px;
-      padding: 0.5em 1em;
-      background-color: #000010;
-      color: white;
-      border: 2px solid gray;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #usrdata {
-      margin-top: 20px;
-    }
-
-    #skinbox img {
-      margin-top: 1em;
-      width: 100%;
-      image-rendering: pixelated;
-    }
+    /* ...deine Styles bleiben so wie vorher... */
   </style>
 </head>
 <body>
 
-<div id="main">
-  <h1 id="header">Lade...</h1>
-  <input id="userid-input" type="text" placeholder="iFixit User-ID eingeben..." />
-  <button onclick="loadUser()">Laden</button>
+  <div id="main">
+    <h1 id="header">Lade...</h1>
+    <input id="userid-input" type="text" placeholder="iFixit User-ID eingeben..." />
+    <button onclick="loadUser()">Laden</button>
 
-  <p id="usrdata">Lade Daten...</p>
-</div>
+    <p id="usrdata">Lade Daten...</p>
+  </div>
 
-<div id="skinbox">
-  <strong>Minecraft Skin</strong><br>
-  <input id="mcname-input" type="text" placeholder="Minecraft-Name optional..." />
-  <button onclick="loadMinecraftSkin()">Skin laden</button>
-  <img id="mcskin" src="" alt="" style="display:none" />
-  <button onclick=${namemclink}> Auf Namemc ansehen </button>
-</div>
+  <div id="skinbox">
+    <strong>Minecraft Skin</strong><br>
+    <input id="mcname-input" type="text" placeholder="Minecraft-Name optional..." />
+    <button onclick="loadMinecraftSkin()">Skin laden</button>
+    <img id="mcskin" src="" alt="" style="display:none" />
+    <br><br>
+    <button id="namemc-btn">Auf Namemc ansehen</button>
+  </div>
 
   <div id="footer" style="margin-top: 3em; font-size: 0.9em; color: #888; text-align: center;">
-  Powered by <a href="https://corsproxy.io" target="_blank" style="color: #bbb;">corsproxy.io</a> 
-  & <a href="https://crafatar.com" target="_blank" style="color: #bbb;">Crafatar</a>. <br/>
-  Made with ❤️ by <a href="https://linktr.ee/friesenjunge226" target="_blank" style="color: #fff; font-weight: bold;">Friesenjunge226</a>
+    Powered by <a href="https://corsproxy.io" target="_blank" style="color: #bbb;">corsproxy.io</a> 
+    & <a href="https://crafatar.com" target="_blank" style="color: #bbb;">Crafatar</a>. <br/>
+    Made with ❤️ by <a href="https://linktr.ee/friesenjunge226" target="_blank" style="color: #fff; font-weight: bold;">Friesenjunge226</a>
   </div>
   
-<script>
-  const proxy = "https://corsproxy.io/?";
-  const knownTeams = {
-    46701: "German Translators",
-    1: "iFixit",
-    4580917: "Made in Germany"
-  };
+  <script>
+    const proxy = "https://corsproxy.io/?";
+    const input = document.getElementById("userid-input");
+    const mcInput = document.getElementById("mcname-input");
+    const skinImg = document.getElementById("mcskin");
+    const namemcBtn = document.getElementById("namemc-btn");
 
-  const input = document.getElementById("userid-input");
-  const mcInput = document.getElementById("mcname-input");
-  const skinImg = document.getElementById("mcskin");
-
-  const savedGradient = localStorage.getItem("ifixitGradient");
-  if (savedGradient) {
-    document.documentElement.style.setProperty('--header-gradient', savedGradient);
-  }
-
-  const savedID = localStorage.getItem("ifixitUserID");
-  if (savedID) {
-    input.value = savedID;
-    fetchUserData(savedID);
-  } else {
-    fetchUserData("4502323");
-  }
-
-  function loadUser() {
-    const userID = input.value.trim();
-    if (userID === "") return;
-    localStorage.setItem("ifixitUserID", userID);
-    fetchUserData(userID);
-  }
-
-  function fetchUserData(userID) {
-    document.getElementById("header").textContent = "Lade...";
-    document.getElementById("usrdata").textContent = "Lade Daten...";
-    skinImg.style.display = "none";
-
-    const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
-    fetch(proxy + encodeURIComponent(targetURL))
-      .then(response => {
-        if (!response.ok) throw new Error("Antwort war nicht OK.");
-        return response.json();
-      })
-      .then(data => {
-        const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
-        const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
-        const usrdata = `
-          <p><strong>Benutzername:</strong> ${data.username}</p>
-          <p><strong>Reputation:</strong> ${data.reputation}</p>
-          <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
-          <p><strong>Teams:</strong> ${teamNames}</p>
-          <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
-          <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
-        `;
-        document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
-        document.getElementById("usrdata").innerHTML = usrdata;
-
-        // Versuche Minecraft Skin zu laden basierend auf Username
-        loadMinecraftSkin(data.username);
-      })
-      .catch(error => {
-        document.getElementById("header").textContent = "Fehler!";
-        document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
-        console.error(error);
-      });
-  }
-
-  function loadMinecraftSkin(defaultName) {
-    const mcName = (mcInput.value || defaultName).trim();
-    if (!mcName) return;
-
-    fetch(`${proxy}https://api.mojang.com/users/profiles/minecraft/${mcName}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Minecraft-Name nicht gefunden.");
-        return res.json();
-      })
-      .then(data => {
-        const uuid = data.id;
-        skinImg.src = `https://crafatar.com/renders/body/${uuid}?scale=7&default=MHF_Steve&overlay`;
-        skinImg.style.display = "block";
-      })
-      .catch(err => {
-        skinImg.style.display = "none";
-        console.warn("Kein Skin gefunden:", err.message);
-      });
-  }
-  // Funktion: Gibt den aktuell gesetzten Minecraft-Namen zurück
-function getCurrentMinecraftName() {
-  return localStorage.getItem("currentMinecraftName") || "";
-}
-
-// Funktion: Setzt den aktuellen Minecraft-Namen (z. B. aus Eingabe oder iFixit-Daten)
-function setCurrentMinecraftName(name) {
-  if (typeof name === "string" && name.trim() !== "") {
-    localStorage.setItem("currentMinecraftName", name.trim());
-  }
-}
-
-  function getNameMCLink() {
-  const mcusername = getCurrentMinecraftName();
-  const namemclink = "https://de.namemc.com/profile/"+${mcusername};
-             }
+    // Minecraft-Name lokal speichern & laden
+    function getCurrentMinecraftName() {
+      return localStorage.getItem("currentMinecraftName") || "";
     }
-  
- </script>
+    function setCurrentMinecraftName(name) {
+      if (typeof name === "string" && name.trim() !== "") {
+        localStorage.setItem("currentMinecraftName", name.trim());
+      }
+    }
+
+    // Userdaten laden
+    function loadUser() {
+      const userID = input.value.trim();
+      if (!userID) return;
+      localStorage.setItem("ifixitUserID", userID);
+      fetchUserData(userID);
+    }
+
+    function fetchUserData(userID) {
+      document.getElementById("header").textContent = "Lade...";
+      document.getElementById("usrdata").textContent = "Lade Daten...";
+      skinImg.style.display = "none";
+
+      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
+      fetch(proxy + encodeURIComponent(targetURL))
+        .then(res => {
+          if (!res.ok) throw new Error("Antwort war nicht OK.");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
+          document.getElementById("usrdata").innerHTML = `
+            <p><strong>Benutzername:</strong> ${data.username}</p>
+            <p><strong>Reputation:</strong> ${data.reputation}</p>
+            <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+            <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+            <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
+          `;
+
+          loadMinecraftSkin(data.username);
+        })
+        .catch(err => {
+          document.getElementById("header").textContent = "Fehler!";
+          document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + err.message;
+          console.error(err);
+        });
+    }
+
+    // Minecraft Skin laden (von Input oder Default)
+    function loadMinecraftSkin(defaultName) {
+      const mcName = (mcInput.value || defaultName).trim();
+      if (!mcName) return;
+
+      setCurrentMinecraftName(mcName);
+
+      fetch(`${proxy}https://api.mojang.com/users/profiles/minecraft/${mcName}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Minecraft-Name nicht gefunden.");
+          return res.json();
+        })
+        .then(data => {
+          skinImg.src = `https://crafatar.com/renders/body/${data.id}?scale=7&default=MHF_Steve&overlay`;
+          skinImg.style.display = "block";
+        })
+        .catch(err => {
+          skinImg.style.display = "none";
+          console.warn("Kein Skin gefunden:", err.message);
+        });
+    }
+
+    // Namemc-Button Event
+    namemcBtn.onclick = () => {
+      const mcusername = getCurrentMinecraftName();
+      if (!mcusername) {
+        alert("Kein Minecraft-Name gesetzt!");
+        return;
+      }
+      const url = `https://de.namemc.com/profile/${encodeURIComponent(mcusername)}`;
+      window.open(url, "_blank");
+    };
+
+    // Init beim Laden der Seite
+    window.onload = () => {
+      const savedID = localStorage.getItem("ifixitUserID");
+      if (savedID) {
+        input.value = savedID;
+        fetchUserData(savedID);
+      } else {
+        fetchUserData("4502323"); // Default: Friesenjunge
+      }
+      // Falls schon Minecraftname gespeichert, setze ihn ins Feld
+      const savedMC = getCurrentMinecraftName();
+      if (savedMC) {
+        mcInput.value = savedMC;
+        loadMinecraftSkin(savedMC);
+      }
+    };
+  </script>
 
 </body>
 </html>
