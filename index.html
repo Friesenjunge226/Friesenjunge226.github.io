@@ -20,7 +20,7 @@
       background-size: 1000% 1000%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shine 60s ease-in-out infinite;
+      animation: shine 300s ease-in-out infinite;
     }
 
     @keyframes shine {
@@ -61,7 +61,6 @@
 
   <input id="userid-input" type="text" placeholder="iFixit User-ID eingeben..." />
   <button onclick="loadUser()">Laden</button>
-  <button onclick="changeGradient()">🌈 Gradient wechseln</button>
 
   <p id="usrdata">Lade Daten...</p>
 
@@ -126,19 +125,6 @@
           document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
           console.error(error);
         });
-    }
-
-    function changeGradient() {
-      const gradients = [
-        "linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc)",
-        "linear-gradient(270deg, #ff0000, #00ff00, #0000ff)",
-        "linear-gradient(270deg, #f0f, #0ff, #0f0)",
-        "linear-gradient(270deg, #111, #333, #555, #999)",
-        "linear-gradient(270deg, #ff6600, #ffff00, #00ffcc, #6600ff)"
-      ];
-      const newGradient = gradients[Math.floor(Math.random() * gradients.length)];
-      document.documentElement.style.setProperty('--header-gradient', newGradient);
-      localStorage.setItem("ifixitGradient", newGradient);
     }
   </script>
 
