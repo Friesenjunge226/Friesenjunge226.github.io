@@ -4,28 +4,35 @@
   <meta charset="UTF-8" />
   <title>iFixit Daten</title>
   <style>
-    :root {
-      --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
-    }
+:root {
+  --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
+}
 
-    body {
-      background-color: #000;
-      color: #fff;
-      padding: 20px 100px;
-      font-family: sans-serif;
-    }
+html {
+  font-size: 16px;
+}
 
-    h1 {
-      background: var(--header-gradient);
-      background-size: 1000% 1000%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shine 60s ease-in-out infinite;
-      font-size: 2rem
-    }
-    p{
-      font-size: 1rem
-    }
+body {
+  background-color: #000;
+  color: #fff;
+  padding: 1.25rem 6.25rem;
+  font-family: sans-serif;
+  font-size: 1rem;
+}
+
+h1 {
+  background: var(--header-gradient);
+  background-size: 1000% 1000%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 60s ease-in-out infinite;
+  font-size: 2rem;
+}
+
+p {
+  font-size: 1rem;
+}
+
 
     @keyframes shine {
       0% { background-position: 0% 50%; }
