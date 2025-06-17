@@ -8,34 +8,28 @@
     :root {
       --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
     }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+    html {
+      font-size: 16px;
+    }
+    body {
       background-color: #000;
       color: #fff;
+      padding: 20px 100px;
       font-family: sans-serif;
       font-size: 1.1rem;
-    }
-
-    body {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      margin: 0;
     }
-
     #content-wrapper {
       display: flex;
       gap: 50px;
-      flex: 1;
-      padding: 20px 100px;
+      flex-grow: 1;
     }
-
     #main {
       flex: 2;
     }
-
     #skinbox {
       flex: 1;
       background-color: #111;
@@ -44,9 +38,8 @@
       border: 2px solid #444;
       text-align: center;
       max-width: 400px;
-      max-height: 700px;
+      max-height: 800px;
     }
-
     h1 {
       background: var(--header-gradient);
       background-size: 1000% 1000%;
@@ -54,14 +47,12 @@
       -webkit-text-fill-color: transparent;
       animation: shine 300s ease-in-out infinite;
     }
-
     @keyframes shine {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
-    input[type="text"] {
+    input[type="text"], #skinbox input {
       padding: 0.5em;
       font-size: 1em;
       border: 2px solid gray;
@@ -69,13 +60,13 @@
       color: white;
       border-radius: 5px;
       margin-bottom: 1em;
+    }
+    input[type="text"] {
       width: 300px;
     }
-
     #skinbox input {
       width: 200px;
     }
-
     button {
       margin-left: 10px;
       padding: 0.5em 1em;
@@ -85,28 +76,25 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     #usrdata {
       margin-top: 20px;
     }
-
     #skinbox img {
       margin-top: 1em;
       width: 100%;
       image-rendering: pixelated;
     }
-
     #footer {
-      text-align: center;
-      padding: 1em 0;
+      margin-top: 0.1em;
+      padding-bottom: 10em;
       font-size: 0.9em;
       color: #888;
+      text-align: center;
       flex-shrink: 0;
     }
   </style>
 </head>
 <body>
-
   <div id="content-wrapper">
     <div id="main">
       <h1 id="header">Lade...</h1>
@@ -126,8 +114,8 @@
   </div>
 
   <div id="footer">
-    Powered by <a href="https://corsproxy.io" target="_blank" style="color: #bbb;">corsproxy.io</a>
-    & <a href="https://crafatar.com" target="_blank" style="color: #bbb;">Crafatar</a>.<br/>
+    Powered by <a href="https://corsproxy.io" target="_blank" style="color: #bbb;">corsproxy.io</a> 
+    & <a href="https://crafatar.com" target="_blank" style="color: #bbb;">Crafatar</a>. <br/>
     Made with ❤️ by <a href="https://linktr.ee/friesenjunge226" target="_blank" style="color: #fff; font-weight: bold;">Friesenjunge226</a>
   </div>
 
@@ -137,7 +125,10 @@
     const mcInput = document.getElementById("mcname-input");
     const skinImg = document.getElementById("mcskin");
     const namemcBtn = document.getElementById("namemc-btn");
+    const urlParams = new URLSearchParams(window.location.search);
+    const isScriptMode = urlParams.get("mode") === "script";
 
+    // Hilfsfunktionen für LocalStorage
     function getCurrentMinecraftName() {
       return localStorage.getItem("currentMinecraftName") || "";
     }
@@ -147,46 +138,10 @@
       }
     }
 
-    function loadUser() {
-      const userID = input.value.trim();
-      if (!userID) return;
-      localStorage.setItem("ifixitUserID", userID);
-      fetchUserData(userID);
-    }
-
-    function fetchUserData(userID) {
-      document.getElementById("header").textContent = "Lade...";
-      document.getElementById("usrdata").textContent = "Lade Daten...";
-      skinImg.style.display = "none";
-
-      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
-      fetch(proxy + encodeURIComponent(targetURL))
-        .then(res => {
-          if (!res.ok) throw new Error("Antwort war nicht OK.");
-          return res.json();
-        })
-        .then(data => {
-          document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
-          document.getElementById("usrdata").innerHTML = `
-            <p><strong>Benutzername:</strong> ${data.username}</p>
-            <p><strong>Reputation:</strong> ${data.reputation}</p>
-            <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
-            <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
-            <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
-          `;
-          loadMinecraftSkin(data.username);
-        })
-        .catch(err => {
-          document.getElementById("header").textContent = "Fehler!";
-          document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + err.message;
-          console.error(err);
-        });
-    }
-
+    // Minecraft Skin laden
     function loadMinecraftSkin(defaultName) {
       const mcName = (mcInput.value || defaultName).trim();
       if (!mcName) return;
-
       setCurrentMinecraftName(mcName);
 
       fetch(`${proxy}https://api.mojang.com/users/profiles/minecraft/${mcName}`)
@@ -204,6 +159,49 @@
         });
     }
 
+    function fetchUserData(userID, skipSkin) {
+      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
+
+      fetch(proxy + encodeURIComponent(targetURL))
+        .then(res => {
+          if (!res.ok) throw new Error("Antwort war nicht OK.");
+          return res.json();
+        })
+        .then(data => {
+          if (isScriptMode) {
+            document.body.innerHTML = '';
+            document.body.style = 'background:#000;color:#0f0;font-family:monospace;padding:20px;';
+            document.body.textContent = JSON.stringify(data, null, 2);
+          } else {
+            document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
+            document.getElementById("usrdata").innerHTML = `
+              <p><strong>Benutzername:</strong> ${data.username}</p>
+              <p><strong>Reputation:</strong> ${data.reputation}</p>
+              <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+              <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+              <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
+            `;
+            if (!skipSkin) loadMinecraftSkin(data.username);
+          }
+        })
+        .catch(err => {
+          if (isScriptMode) {
+            document.body.textContent = `Fehler: ${err.message}`;
+          } else {
+            document.getElementById("header").textContent = "Fehler!";
+            document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + err.message;
+          }
+        });
+    }
+
+    function loadUser() {
+      const userID = input.value.trim();
+      if (!userID) return;
+      localStorage.setItem("ifixitUserID", userID);
+      fetchUserData(userID);
+    }
+
+    // Namemc-Button
     namemcBtn.onclick = () => {
       const mcusername = getCurrentMinecraftName();
       if (!mcusername) {
@@ -214,53 +212,19 @@
       window.open(url, "_blank");
     };
 
+    // Initialisierung
     window.onload = () => {
-      const savedID = localStorage.getItem("ifixitUserID");
-      if (savedID) {
-        input.value = savedID;
-        fetchUserData(savedID);
-      } else {
-        fetchUserData("4502323"); // Friesenjunge default
-      }
-      
-      function autoRefresh() {
-  const savedID = localStorage.getItem("ifixitUserID");
-  if (savedID) fetchUserData(savedID);
-}
-setInterval(autoRefresh, 60000); // alle 60 Sekunden
-      
+      const savedID = localStorage.getItem("ifixitUserID") || "4502323";
       const savedMC = getCurrentMinecraftName();
-      if (savedMC) {
-        mcInput.value = savedMC;
-        loadMinecraftSkin(savedMC);
+      if (!isScriptMode) {
+        input.value = savedID;
+        if (savedMC) mcInput.value = savedMC;
+      }
+      fetchUserData(savedID);
+      if (!isScriptMode) {
+        setInterval(() => fetchUserData(savedID, true), 60000); // refresh every 60s
       }
     };
-    
-    const urlParams = new URLSearchParams(window.location.search);
-const isScriptMode = urlParams.get('mode') === 'script';
-
-if (isScriptMode) {
-  // Beispiel: JSON-Daten ausgeben (z.B. vom iFixit-User)
-  const savedID = localStorage.getItem("ifixitUserID") || "4502323";
-
-  fetch(`https://www.ifixit.com/api/2.0/users/${savedID}`)
-    .then(res => res.json())
-    .then(data => {
-      // JSON zurückgeben — als reine Ausgabe, keine Seite rendern
-      document.body.innerHTML = ''; // Seite clearen
-      document.body.style = 'background:#000;color:#0f0;font-family:monospace;padding:20px;';
-      document.body.textContent = JSON.stringify(data, null, 2);
-    })
-    .catch(err => {
-      document.body.textContent = `Fehler: ${err.message}`;
-    });
-} else {
-  // Normale Seite laden, wie gehabt
-  window.onload = () => {
-    // dein init code...
-  };
-}
   </script>
-
 </body>
 </html>
