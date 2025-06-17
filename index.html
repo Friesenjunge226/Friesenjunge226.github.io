@@ -105,8 +105,15 @@
   <input id="mcname-input" type="text" placeholder="Minecraft-Name optional..." />
   <button onclick="loadMinecraftSkin()">Skin laden</button>
   <img id="mcskin" src="" alt="" style="display:none" />
+  <button onclick=${namemclink}> Auf Namemc ansehen </button>
 </div>
 
+  <div id="footer" style="margin-top: 3em; font-size: 0.9em; color: #888; text-align: center;">
+  Powered by <a href="https://corsproxy.io" target="_blank" style="color: #bbb;">corsproxy.io</a> 
+  & <a href="https://crafatar.com" target="_blank" style="color: #bbb;">Crafatar</a>. <br/>
+  Made with ❤️ by <a href="https://linktr.ee/friesenjunge226" target="_blank" style="color: #fff; font-weight: bold;">Friesenjunge226</a>
+  </div>
+  
 <script>
   const proxy = "https://corsproxy.io/?";
   const knownTeams = {
@@ -193,7 +200,25 @@
         console.warn("Kein Skin gefunden:", err.message);
       });
   }
-</script>
+  // Funktion: Gibt den aktuell gesetzten Minecraft-Namen zurück
+function getCurrentMinecraftName() {
+  return localStorage.getItem("currentMinecraftName") || "";
+}
+
+// Funktion: Setzt den aktuellen Minecraft-Namen (z. B. aus Eingabe oder iFixit-Daten)
+function setCurrentMinecraftName(name) {
+  if (typeof name === "string" && name.trim() !== "") {
+    localStorage.setItem("currentMinecraftName", name.trim());
+  }
+}
+
+  function getNameMCLink() {
+  const mcusername = getCurrentMinecraftName();
+  const namemclink = "https://de.namemc.com/profile/${mcusername}";
+             }
+    }
+  
+ </script>
 
 </body>
 </html>
