@@ -7,7 +7,7 @@
     :root {
       --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
     }
-    html{
+    html {
       font-size: 16px;
     }
     body {
@@ -16,7 +16,24 @@
       padding: 20px 100px;
       font-family: sans-serif;
       font-size: 1.1rem;
+      display: flex;
+      gap: 50px;
     }
+
+    #main {
+      flex: 2;
+    }
+
+    #skinbox {
+      flex: 1;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #444;
+      text-align: center;
+      max-width: 200px;
+    }
+
     h1 {
       background: var(--header-gradient);
       background-size: 1000% 1000%;
@@ -55,81 +72,118 @@
     #usrdata {
       margin-top: 20px;
     }
+
+    #skinbox img {
+      margin-top: 1em;
+      width: 100%;
+      image-rendering: pixelated;
+    }
   </style>
 </head>
 <body>
 
+<div id="main">
   <h1 id="header">Lade...</h1>
   <input id="userid-input" type="text" placeholder="iFixit User-ID eingeben..." />
   <button onclick="loadUser()">Laden</button>
 
   <p id="usrdata">Lade Daten...</p>
+</div>
 
-  <script>
-    const proxy = "https://corsproxy.io/?";
-    const knownTeams = {
-      46701: "German Translators",
-      1: "iFixit",
-      4580917: "Made in Germany"
-    };
+<div id="skinbox">
+  <strong>Minecraft Skin</strong><br>
+  <input id="mcname-input" type="text" placeholder="Minecraft-Name optional..." />
+  <button onclick="loadMinecraftSkin()">Skin laden</button>
+  <img id="mcskin" src="" alt="" style="display:none" />
+</div>
 
-    
-    const input = document.getElementById("userid-input");
+<script>
+  const proxy = "https://corsproxy.io/?";
+  const knownTeams = {
+    46701: "German Translators",
+    1: "iFixit",
+    4580917: "Made in Germany"
+  };
 
-    // === Gradient laden ===
-    const savedGradient = localStorage.getItem("ifixitGradient");
-    if (savedGradient) {
-      document.documentElement.style.setProperty('--header-gradient', savedGradient);
-    }
+  const input = document.getElementById("userid-input");
+  const mcInput = document.getElementById("mcname-input");
+  const skinImg = document.getElementById("mcskin");
 
-    // === User-ID laden ===
-    const savedID = localStorage.getItem("ifixitUserID");
-    if (savedID) {
-      input.value = savedID;
-      fetchUserData(savedID);
-    } else {
-      fetchUserData("4502323"); // Standard-User: Friesenjunge
-    }
+  const savedGradient = localStorage.getItem("ifixitGradient");
+  if (savedGradient) {
+    document.documentElement.style.setProperty('--header-gradient', savedGradient);
+  }
 
-    function loadUser() {
-      const userID = input.value.trim();
-      if (userID === "") return;
-      localStorage.setItem("ifixitUserID", userID);
-      fetchUserData(userID);
-    }
+  const savedID = localStorage.getItem("ifixitUserID");
+  if (savedID) {
+    input.value = savedID;
+    fetchUserData(savedID);
+  } else {
+    fetchUserData("4502323");
+  }
 
-    function fetchUserData(userID) {
-      document.getElementById("header").textContent = "Lade...";
-      document.getElementById("usrdata").textContent = "Lade Daten...";
+  function loadUser() {
+    const userID = input.value.trim();
+    if (userID === "") return;
+    localStorage.setItem("ifixitUserID", userID);
+    fetchUserData(userID);
+  }
 
-      const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
-      fetch(proxy + encodeURIComponent(targetURL))
-        .then(response => {
-          if (!response.ok) throw new Error("Antwort war nicht OK.");
-          return response.json();
-        })
-        .then(data => {
-          const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
-          const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
-          const usrdata = `
-            <p><strong>Benutzername:</strong> ${data.username}</p>
-            <p><strong>Reputation:</strong> ${data.reputation}</p>
-            <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
-            <p><strong>Teams:</strong> ${teamNames}</p>
-            <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
-            <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
-          `;
-          document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
-          document.getElementById("usrdata").innerHTML = usrdata;
-        })
-        .catch(error => {
-          document.getElementById("header").textContent = "Fehler!";
-          document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
-          console.error(error);
-        });
-    }
+  function fetchUserData(userID) {
+    document.getElementById("header").textContent = "Lade...";
+    document.getElementById("usrdata").textContent = "Lade Daten...";
+    skinImg.style.display = "none";
 
-  </script>
+    const targetURL = `https://www.ifixit.com/api/2.0/users/${userID}`;
+    fetch(proxy + encodeURIComponent(targetURL))
+      .then(response => {
+        if (!response.ok) throw new Error("Antwort war nicht OK.");
+        return response.json();
+      })
+      .then(data => {
+        const teamIDs = Array.isArray(data.teams) ? data.teams : [data.teams];
+        const teamNames = teamIDs.map(id => knownTeams[id] || `Team-ID ${id}`).join(", ");
+        const usrdata = `
+          <p><strong>Benutzername:</strong> ${data.username}</p>
+          <p><strong>Reputation:</strong> ${data.reputation}</p>
+          <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
+          <p><strong>Teams:</strong> ${teamNames}</p>
+          <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
+          <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
+        `;
+        document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
+        document.getElementById("usrdata").innerHTML = usrdata;
+
+        // Versuche Minecraft Skin zu laden basierend auf Username
+        loadMinecraftSkin(data.username);
+      })
+      .catch(error => {
+        document.getElementById("header").textContent = "Fehler!";
+        document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
+        console.error(error);
+      });
+  }
+
+  function loadMinecraftSkin(defaultName) {
+    const mcName = (mcInput.value || defaultName).trim();
+    if (!mcName) return;
+
+    fetch(`${proxy}https://api.mojang.com/users/profiles/minecraft/${mcName}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Minecraft-Name nicht gefunden.");
+        return res.json();
+      })
+      .then(data => {
+        const uuid = data.id;
+        skinImg.src = `https://crafatar.com/renders/body/${uuid}?scale=7&default=MHF_Steve&overlay`;
+        skinImg.style.display = "block";
+      })
+      .catch(err => {
+        skinImg.style.display = "none";
+        console.warn("Kein Skin gefunden:", err.message);
+      });
+  }
+</script>
 
 </body>
 </html>
