@@ -21,6 +21,10 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: shine 60s ease-in-out infinite;
+      font-size: 30pt
+    }
+    p{
+      font-size: 15pt
     }
 
     @keyframes shine {
@@ -115,7 +119,7 @@
           <p><strong>Beigetreten am:</strong> ${new Date(data.join_date * 1000).toLocaleDateString("de-DE")}</p>
           <p><strong>Teams:</strong> ${teamNames}</p>
           <p><strong>Badges:</strong> 🥉 ${data.badge_counts.bronze} | 🥈 ${data.badge_counts.silver} | 🥇 ${data.badge_counts.gold}</p>
-          <p><strong>Beschreibung:</strong> ${data.summary} </p>
+          <p><strong>Beschreibung:</strong> ${data.summary}</p>
           <p><strong>Link zum Profil:</strong> <a href="https://www.ifixit.com/User/${data.userid}" target="_blank">Hier klicken</a></p>
         `;
         document.getElementById("header").textContent = `iFixit Stats von ${data.username}`;
