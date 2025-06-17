@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <title>iFixit Daten</title>
   <style>
+    :root {
+      --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
+    }
+
     body {
       background-color: #000;
       color: #fff;
@@ -11,17 +15,13 @@
       font-family: sans-serif;
     }
 
-    :root {
-  --header-gradient: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc);
-}
-
-h1 {
-  background: var(--header-gradient);
-  background-size: 1000% 1000%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shine 60s ease-in-out infinite;
-}
+    h1 {
+      background: var(--header-gradient);
+      background-size: 1000% 1000%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 60s ease-in-out infinite;
+    }
 
     @keyframes shine {
       0% { background-position: 0% 50%; }
@@ -38,7 +38,6 @@ h1 {
       border-radius: 5px;
       margin-bottom: 1em;
       width: 300px;
-      border-width: 2px;
     }
 
     button {
@@ -62,10 +61,10 @@ h1 {
 
   <input id="userid-input" type="text" placeholder="iFixit User-ID eingeben..." />
   <button onclick="loadUser()">Laden</button>
+  <button onclick="changeGradient()">🌈 Gradient wechseln</button>
 
   <p id="usrdata">Lade Daten...</p>
 
-  
   <script>
     const proxy = "https://corsproxy.io/?";
     const knownTeams = {
@@ -74,20 +73,21 @@ h1 {
       4580917: "Made in Germany"
     };
 
-    // === Gradient speichern/laden ===
-    function saveGradient() {
-  const currentGradient = getComputedStyle(document.documentElement).getPropertyValue('--header-gradient');
-  localStorage.setItem("ifixitGradient", currentGradient);
+    const input = document.getElementById("userid-input");
+
+    // === Gradient laden ===
+    const savedGradient = localStorage.getItem("ifixitGradient");
+    if (savedGradient) {
+      document.documentElement.style.setProperty('--header-gradient', savedGradient);
     }
 
-    // === User-ID speichern/laden ===
-    const input = document.getElementById("userid-input");
+    // === User-ID laden ===
     const savedID = localStorage.getItem("ifixitUserID");
     if (savedID) {
       input.value = savedID;
       fetchUserData(savedID);
     } else {
-      fetchUserData("4502323"); // Standard: Friesenjunge
+      fetchUserData("4502323"); // Standard-User: Friesenjunge
     }
 
     function loadUser() {
@@ -126,6 +126,19 @@ h1 {
           document.getElementById("usrdata").textContent = "Fehler beim Laden von Daten: " + error.message;
           console.error(error);
         });
+    }
+
+    function changeGradient() {
+      const gradients = [
+        "linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc, #ffcc00, #ff00cc)",
+        "linear-gradient(270deg, #ff0000, #00ff00, #0000ff)",
+        "linear-gradient(270deg, #f0f, #0ff, #0f0)",
+        "linear-gradient(270deg, #111, #333, #555, #999)",
+        "linear-gradient(270deg, #ff6600, #ffff00, #00ffcc, #6600ff)"
+      ];
+      const newGradient = gradients[Math.floor(Math.random() * gradients.length)];
+      document.documentElement.style.setProperty('--header-gradient', newGradient);
+      localStorage.setItem("ifixitGradient", newGradient);
     }
   </script>
 
