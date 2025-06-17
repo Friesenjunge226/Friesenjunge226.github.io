@@ -17,7 +17,9 @@
       font-family: sans-serif;
       font-size: 1.1rem;
     }
-
+    div{
+      align: right;
+    }
     h1 {
       background: var(--header-gradient);
       background-size: 1000% 1000%;
@@ -61,7 +63,13 @@
 <body>
 
   <h1 id="header">Lade...</h1>
-
+  <div id="skin-container" style="margin-top: 2rem;">
+  <h2>Minecraft Skin</h2>
+  <label for="mc-username-input">Minecraft-Name:</label>
+  <input id="mc-username-input" type="text" placeholder="z. B. Friesenjunge226" />
+  <button onclick="loadMinecraftSkin()">Skin laden</button>
+  <div id="skin-output" style="margin-top: 1rem;"></div>
+  </div>
   <input id="userid-input" type="text" placeholder="iFixit User-ID eingeben..." />
   <button onclick="loadUser()">Laden</button>
 
@@ -130,6 +138,52 @@
           console.error(error);
         });
     }
+    
+    function loadMinecraftSkin() {
+  const mcName = document.getElementById("mc-username-input").value.trim();
+  if (!mcName) return;
+
+     const MojangApiIp = "https://api.mojang.com/users/profiles/minecraft/${mcName}"
+  fetch(proxy + MojangApiIp)
+    .then(res => {
+      if (!res.ok) throw new Error("Nicht gefunden");
+      return res.json();
+    })
+    .then(data => {
+      const uuid = data.id;
+      const img = document.createElement("img");
+      img.src = `https://crafatar.com/renders/body/${uuid}?scale=6`;
+      img.alt = `${mcName}'s Minecraft Skin`;
+      img.style.borderRadius = "10px";
+      img.style.boxShadow = "0 0 20px rgba(0, 255, 255, 0.5)";
+      img.style.transition = "transform 0.3s ease";
+      img.style.maxHeight = "320px";
+
+      img.onmouseenter = () => img.style.transform = "scale(1.05)";
+      img.onmouseleave = () => img.style.transform = "scale(1)";
+
+      const output = document.getElementById("skin-output");
+      output.innerHTML = ""; // vorherigen Skin löschen
+      output.appendChild(img);
+    })
+    .catch(() => {
+      const output = document.getElementById("skin-output");
+      output.innerHTML = `<p style="color: red;">Skin konnte nicht geladen werden.</p>`;
+    });
+}
+
+// iFixit-Username bei Erfolg direkt versuchen
+function fetchUserData(userID) {
+  // ... (dein bestehender Code bleibt)
+  // Dann am Ende deines .then(data => { ... }):
+
+  tryAutoLoadSkin(data.username);
+}
+
+function tryAutoLoadSkin(username) {
+  document.getElementById("mc-username-input").value = username;
+  loadMinecraftSkin();
+}
   </script>
 
 </body>
