@@ -222,13 +222,44 @@
       } else {
         fetchUserData("4502323"); // Friesenjunge default
       }
-
+      
+      function autoRefresh() {
+  const savedID = localStorage.getItem("ifixitUserID");
+  if (savedID) fetchUserData(savedID);
+}
+setInterval(autoRefresh, 60000); // alle 60 Sekunden
+      
       const savedMC = getCurrentMinecraftName();
       if (savedMC) {
         mcInput.value = savedMC;
         loadMinecraftSkin(savedMC);
       }
     };
+    
+    const urlParams = new URLSearchParams(window.location.search);
+const isScriptMode = urlParams.get('mode') === 'script';
+
+if (isScriptMode) {
+  // Beispiel: JSON-Daten ausgeben (z.B. vom iFixit-User)
+  const savedID = localStorage.getItem("ifixitUserID") || "4502323";
+
+  fetch(`https://www.ifixit.com/api/2.0/users/${savedID}`)
+    .then(res => res.json())
+    .then(data => {
+      // JSON zurückgeben — als reine Ausgabe, keine Seite rendern
+      document.body.innerHTML = ''; // Seite clearen
+      document.body.style = 'background:#000;color:#0f0;font-family:monospace;padding:20px;';
+      document.body.textContent = JSON.stringify(data, null, 2);
+    })
+    .catch(err => {
+      document.body.textContent = `Fehler: ${err.message}`;
+    });
+} else {
+  // Normale Seite laden, wie gehabt
+  window.onload = () => {
+    // dein init code...
+  };
+}
   </script>
 
 </body>
