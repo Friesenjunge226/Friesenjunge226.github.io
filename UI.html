@@ -1,0 +1,258 @@
+<!--
+Die "Schlechteste Webseite" - absichtlich unintuitiv, verwirrend und frustrierend.
+Nur zu Test-/Unterhaltungszwecken. Keine echte Datenübermittlung.
+--><!doctype html>
+
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Willkommen! (Oder auch nicht)</title>
+<style>
+  /* Grelles, schlecht kontrastiertes Farbschema */
+  body{font-family: 'Comic Sans MS', cursive, sans-serif;background:linear-gradient(45deg,#ff00ff33,#00ffff33);color:#eee;margin:0;padding:0}
+  header{background:#ffff0055;padding:20px;text-align:center;border-bottom:6px dashed #00f}
+  h1{margin:0;font-size:28px;color:#222}
+  /* Winzige, schwer lesbare Hinweise */
+  .hint{font-size:8px;color:#fff7;background:#fff7;padding:2px 6px;border-radius:2px;display:inline-block}
+  /* Layout in Spalten, aber ohne Sinn */
+  .container{display:grid;grid-template-columns:1fr 2fr 1fr;gap:12px;padding:30px}
+  .box{background:rgba(255,255,255,0.06);padding:18px;border-radius:6px;min-height:220px;border:3px dotted rgba(0,0,0,0.2)}
+  /* Schlechtes Formulardesign */
+  form{display:flex;flex-direction:column;gap:10px}
+  label{font-size:10px;color:rgba(0,0,0,0.15)}
+  input[type=email],input[type=password],input[type=text]{padding:8px;border:2px solid rgba(0,0,0,0.05);border-radius:2px;background:transparent;color:#ddd}
+  /* Platzhalter, die in die Irre führen */
+  ::placeholder{color:#ccc;font-style:italic}
+  /* Buttons, die seltsam beschriftet sind */
+  .btn{padding:10px 14px;border:0;border-radius:3px;cursor:pointer;font-weight:bold}
+  .btn-primary{background:transparent;border:2px dashed #fff;color:#111}
+  .btn-secondary{background:#111;color:#fff}
+  /* Inputs verstecken/anzeigen unlogisch */
+  .invisible{opacity:0.05;height:1px;transform:scaleY(0.7)}
+  /* Drängelnde, blinkende Elemente */
+  @keyframes pulse{0%{opacity:1}50%{opacity:0.2}100%{opacity:1}}
+  .pulse{animation:pulse 1.2s infinite}
+  /* schlechter Fokus-Indikator */
+  input:focus{outline:4px dotted red;transform:scale(1.01)}
+  /* kleine, schwer zu klickende Links */
+  a{color:#222;text-decoration:underline dotted;font-size:11px}
+  nav{display:flex;gap:8px;justify-content:center;margin-top:6px}
+  .notice{font-size:12px;color:#111;background:#fff2;padding:6px;border-radius:4px}
+  /* Verschobene Footer-Buttons */
+  footer{display:flex;justify-content:flex-end;padding:18px;background:#00000011}
+</style>
+</head>
+<body>
+<header>
+  <h1>✦ Willkommen bei: „Einloggen? Vielleicht.“ ✦</h1>
+  <div class="hint">Hinweis: Was hier steht, stimmt nicht immer.</div>
+  <nav>
+    <a href="#" onclick="randomizeLabels(event)">Home</a>
+    <a href="#" onclick="confuse(event)">Registrieren</a>
+    <a href="#" onclick="openSpam(event)">Mehr</a>
+  </nav>
+</header>
+<main class="container" role="main">
+  <section class="box" aria-labelledby="title1">
+    <h2 id="title1">Schnelle Anmeldung (oder so)</h2>
+    <!-- Absichtlich verwirrendes Formular -->
+    <form id="worstForm" onsubmit="return fakeSubmit(event)">
+      <!-- 1) zwei Email-Felder, unterschiedliche Beschriftungen -->
+      <label for="email1">E-Mail (wirklich?)</label>
+      <input id="email1" name="email1" type="email" placeholder="meine@mail.de" tabindex="3"><label for="email2" class="invisible">E-Mail (nochmal zur Bestätigung)</label>
+  <input id="email2" name="email2" type="text" placeholder="Email, aber ohne @ möglich" tabindex="2">
+
+  <!-- 2) Passwortfeld sichtbar, aber auch ein verstecktes Passwortfeld -->
+  <label for="pwvisible">Passwort (sichtbar)</label>
+  <input id="pwvisible" name="pwvisible" type="text" placeholder="Hier tippen (sichtbar)" value="" tabindex="5">
+
+  <label for="pw">Passwort (geheim)</label>
+  <input id="pw" name="pw" type="password" placeholder="Geheim" tabindex="4">
+
+  <!-- 3) irreführende Buttons -->
+  <div style="display:flex;gap:6px">
+    <button class="btn btn-primary" type="button" onclick="nonsense()" tabindex="7">Vielleicht</button>
+    <button class="btn btn-secondary" type="submit" tabindex="6">Einloggen</button>
+    <button class="btn" type="reset" tabindex="1">Zurücksetzen</button>
+  </div>
+
+  <!-- 4) unsichtbare Pflicht-Checkbox -->
+  <div style="margin-top:8px">
+    <label style="font-size:10px;opacity:0.2">Ich stimme zu (oder nicht)</label>
+    <input id="trap" type="checkbox" style="opacity:0.01;position:relative;left:-8px;top:-6px" tabindex="8">
+  </div>
+
+  <!-- 5) Fake Captcha -->
+  <div aria-hidden="true" style="margin-top:12px;padding:8px;border:1px dashed rgba(255,255,255,0.1)">
+    <div style="font-size:11px">Bitte beweisen Sie, dass Sie kein Roboter sind:</div>
+    <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+      <input id="captcha" placeholder="Was ist 2+2?" tabindex="9">
+      <button type="button" onclick="wrongCaptcha()" tabindex="10">Antwort prüfen</button>
+    </div>
+  </div>
+
+  <p class="notice pulse">ACHTUNG: Durch Klicken auf „Einloggen" bestätigen Sie, dass Sie alles gelesen und nichts verstanden haben.</p>
+</form>
+
+  </section>  <aside class="box" aria-labelledby="title2">
+    <h2 id="title2">Nützliche Links (oder Ablenkungen)</h2>
+    <ul>
+      <li><a href="#" onclick="openSpam(event)">Wie man sich NICHT anmeldet</a></li>
+      <li><a href="#" onclick="redirectLoop(event)">Sicherheitsrichtlinie (404)</a></li>
+      <li><a href="#" onclick="tinyText(event)">Kleiner Text</a></li>
+      <li><a href="#" onclick="toggleInputs(event)">Verstecke Formularfelder</a></li>
+    </ul>
+    <p style="font-size:9px;opacity:0.6">Tipp: Tabulator-Reihenfolge ist zufällig. Benutzen Sie lieber die Maus — oder raten Sie.</p>
+  </aside>  <section class="box" aria-labelledby="title3">
+    <h2 id="title3">Warum das Ganze?</h2>
+    <p style="font-size:13px">Weil gute UX langweilig und vernünftig ist. Diese Seite ist voller anti-UX-Entscheidungen, damit du lernst, was du NICHT bauen solltest.</p>
+    <p style="font-size:11px">Test-Szenarien:
+      <ul>
+        <li>Tab-Key springt herum</li>
+        <li>Placeholders lügen</li>
+        <li>Buttons tun nicht, was sie sagen</li>
+      </ul>
+    </p>
+    <div style="margin-top:8px">
+      <button onclick="simulateError()" class="btn btn-primary">Fehler simulieren</button>
+      <button onclick="playAnnoying()" class="btn">Lärm machen</button>
+    </div>
+  </section>
+</main><footer>
+  <button onclick="openEULA()" class="btn" style="margin-right:auto">AGB (versteckt)</button>
+  <small style="align-self:center;font-size:11px;opacity:0.6">© Niemand | Alle Rechte, keine Verantwortung</small>
+</footer><script>
+  // Fokus- und Tab-Order-Chaos erzeugen
+  (function(){
+    const order = [ 'reset', 'email2', 'email1', 'pw', 'pwvisible', 'submitMaybe' ];
+    // bewusst nichts weiter tun: Verwirrung entsteht durch tabindex in HTML
+  })();
+
+  // Verhindere Copy/Paste zufällig (nur kleiner Nervfaktor)
+  document.addEventListener('paste', function(e){
+    if(Math.random()>0.4){
+      e.preventDefault();
+      alert('Paste ist hier deaktiviert. Warum? Gute Frage.');
+    }
+  });
+
+  // Buttons / Aktionen
+  function nonsense(){
+    alert('Diese Taste tut nichts Nützliches. Oder doch?');
+    document.getElementById('email1').placeholder = 'Jetzt mal ehrlich: deine Email?';
+  }
+
+  function wrongCaptcha(){
+    const c = document.getElementById('captcha');
+    if(!c) return;
+    if(c.value.trim() === '4'){
+      alert('Falsch! Das ist zu offensichtlich. Versuche: fünf');
+      c.value='';
+    } else {
+      alert('Richtig! Leider weiß das Backend nichts davon.');
+    }
+  }
+
+  function playAnnoying(){
+    // Kurzer, unschädlicher Ton (WebAudio) - manche Browser blocken Auto-Play
+    try{
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      o.type='square';o.frequency.setValueAtTime(880,ctx.currentTime);
+      const g = ctx.createGain();g.gain.setValueAtTime(0.0001,ctx.currentTime);
+      o.connect(g);g.connect(ctx.destination);
+      o.start();
+      // pulsiere den Ton kurz
+      let t=0;const i=setInterval(()=>{g.gain.value = (t%2)?0.1:0.0001; t++; if(t>8){clearInterval(i);o.stop();ctx.close();}},200);
+    }catch(e){alert('Audio nicht möglich. Glück gehabt.');}
+  }
+
+  function simulateError(){
+    const f=document.getElementById('worstForm');
+    const p = document.createElement('p');
+    p.textContent = 'Unerwarteter Fehler: 0xDEADBEEF';
+    p.style.background='#ffcccc';p.style.padding='8px';p.style.border='1px solid #a00';
+    f.prepend(p);
+    // Fokus auf ein unsichtbares Feld setzen (Fokus-Falle)
+    document.getElementById('trap').focus();
+  }
+
+  function fakeSubmit(e){
+    e.preventDefault();
+    // absichtlich verwirrende Validierungen
+    const email1 = document.getElementById('email1').value.trim();
+    const email2 = document.getElementById('email2').value.trim();
+    const pw = document.getElementById('pw').value;
+    const pwv = document.getElementById('pwvisible').value;
+
+    // Unlogische Reihenfolge: email2 ist Pflicht, email1 optional
+    if(email2.length < 5){
+      showInlineError('email2','Bitte gib zuerst die E-Mail ein (ja, die zweite).');
+      return false;
+    }
+    if(pw.length < 6 && pwv.length < 6){
+      showInlineError('pw','Mindestens 6 Zeichen in einem der Passwortfelder erforderlich. Oder gib deinem Haustier einen Namen.');
+      return false;
+    }
+
+    // Checkbox-Falle
+    const trap = document.getElementById('trap');
+    if(!trap.checked){
+      alert('Sie müssen zustimmen, dass Sie nicht zustimmen. (Checkbox fehlt)');
+      // setze Checkbox und blockiere kurzzeitig
+      trap.checked=true;
+      setTimeout(()=>{trap.checked=false;},1500);
+      return false;
+    }
+
+    // Alles ok? --> Zeige ein mysteriöses Overlay
+    showOverlay('Logging you in... maybe.');
+    setTimeout(()=>{
+      // absichtlich widersprüchliche Meldungen
+      hideOverlay();
+      const r = Math.random();
+      if(r < 0.4) alert('Erfolg! (Nur ein bisschen)');
+      else if(r < 0.8) alert('Fehler: Unbekannter Status. Versuche es später.');
+      else alert('Cool! Wir haben deine Daten nicht.');
+    },1200);
+
+    return false;
+  }
+
+  function showInlineError(id,msg){
+    const el = document.getElementById(id) || document.getElementsByName(id)[0];
+    if(!el) return alert(msg);
+    const p = document.createElement('div');
+    p.textContent = msg; p.style.color='#900'; p.style.fontSize='12px'; p.style.marginTop='6px';
+    el.parentNode.insertBefore(p, el.nextSibling);
+    el.focus();
+  }
+
+  function showOverlay(text){
+    const o = document.createElement('div');
+    o.id='__overlay';
+    o.style.position='fixed';o.style.inset='0';o.style.display='flex';o.style.alignItems='center';o.style.justifyContent='center';
+    o.style.background='rgba(0,0,0,0.6)';o.style.zIndex=9999;color:'#fff';
+    o.innerHTML = '<div style="background:#fff;color:#000;padding:20px;border-radius:8px;min-width:220px;text-align:center">'+text+'<div style="margin-top:8px;font-size:11px">(Oder auch nicht)</div></div>';
+    document.body.appendChild(o);
+  }
+  function hideOverlay(){ const o=document.getElementById('__overlay'); if(o) o.remove(); }
+
+  function openSpam(e){ e.preventDefault(); alert('Öffne: Hilfreiche Ressource... (nur Spaß)'); }
+  function redirectLoop(e){ e.preventDefault(); for(let i=0;i<3;i++) history.pushState({},'','?r='+Math.random().toString(36).slice(2,6)); alert('Du bist jetzt in einer Session-Loop. Viel Spaß.'); }
+  function tinyText(e){ e.preventDefault(); document.querySelectorAll('p').forEach(p=>p.style.fontSize='6px'); }
+  function toggleInputs(e){ e.preventDefault(); document.querySelectorAll('input').forEach(i=>i.classList.toggle('invisible')); }
+  function openEULA(){ alert('EULA: Wir übernehmen keine Verantwortung. Aber lesen Sie trotzdem.'); }
+
+  // Verhindere rechte Maustaste (kleiner Nervfaktor)
+  document.addEventListener('contextmenu', e=>{ if(Math.random()>0.2){ e.preventDefault(); alert('Kontextmenü deaktiviert — aus Gründen.'); } });
+
+  // Randomisiere Labels als zusätzliche Verwirrung
+  function randomizeLabels(e){ e.preventDefault(); const labels = document.querySelectorAll('label'); labels.forEach(l=>{ if(Math.random()>0.5) l.textContent = ['E-Mail?','Passwort?','Klick hier','War das alles?'][Math.floor(Math.random()*4)]; }); }
+
+  // Fokus-Falle bei Ankerklicks
+  document.querySelectorAll('a').forEach(a=>a.addEventListener('focus', ()=>{ setTimeout(()=>a.blur(),200); }));
+
+</script></body>
+</html>
