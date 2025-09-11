@@ -1,15 +1,83 @@
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <title>Friendly Website</title>
-  </head>
-  <body>
-    <p style:"color:#fff; font-size:0px; align: top">pEdEGZTyAMMHE6DefMYyAQ==<p>
-    <h1>Friendly Website</h1>
-    <p>: /eF46zgwAbB5FtkKrWQbQw==</p>
-    <br><a>https://encode-decode.com/aes256-encrypt-online/</a> <p>using HTTPS</p>
-  </body>
-  <script>
-    
-  </script>
-</html> 
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini-CTF: Drei Web-Challenges</title>
+<style>
+ body { font-family: Arial, sans-serif; background:#111; color:#eee; margin:0; }
+ h1 { text-align:center; padding:1rem; background:#222; }
+ section { border-bottom:1px solid #333; padding:1.5rem; max-width:800px; margin:auto; }
+ .task-title { font-size:1.4rem; margin-bottom:.5rem; }
+ input[type=text] { width:70%; padding:.4rem; }
+ button { padding:.4rem .8rem; margin-left:.5rem; background:#4caf50; color:white; border:none; cursor:pointer; }
+ .result { margin-top:.5rem; font-weight:bold; }
+ a.hiddenlink { color:#4caf50; }
+</style>
+</head>
+<body>
+<h1>Mini-CTF: Drei Web-Challenges</h1>
+/*
+  5: FLAG{S0urce_c0de_h4s_treasur3s}
+*/
+<section id="task4">
+  <div class="task-title">Aufgabe 4 – Friendly Robots</div>
+  <p>Eine harmlose Seite, doch vielleicht verrät sie den Suchmaschinen zu viel.<br>
+     <em>Tipp:</em> Schau dir an, welche Dateien ein Roboter wohl zuerst aufsucht.</p>
+  <label>Flag eingeben:
+    <input type="text" id="flag4">
+  </label>
+  <button onclick="checkFlag('flag4','task4')">Prüfen</button>
+  <div class="result" id="result4"></div>
+</section>
+
+<section id="task5">
+  <div class="task-title">Aufgabe 5 – Source of Truth</div>
+  <p>Manchmal ist das Wesentliche nicht auf den ersten Blick sichtbar.
+     Wer zwischen den Zeilen liest, entdeckt mehr.</p>
+  <label>Flag eingeben:
+    <input type="text" id="flag5">
+  </label>
+  <button onclick="checkFlag('flag5','task5')">Prüfen</button>
+  <div class="result" id="result5"></div>
+</section>
+
+<section id="task6">
+  <div class="task-title">Aufgabe 6 – Hidden in the Air</div>
+  <p>Dieser Server grüßt freundlich – vielleicht verrät ein flüchtiger Blick auf seine
+     Antwort-Köpfe ein Geheimnis.</p>
+  <label>Flag eingeben:
+    <input type="text" id="flag6">
+  </label>
+  <button onclick="checkFlag('flag6','task6')">Prüfen</button>
+  <div class="result" id="result6"></div>
+</section>
+
+<script>
+
+const hashes = {
+  task4: "b16fef3f1e274fd6029dbb6f676d7908b0c51f3f928e558391b85cdb73f7f5f2",
+  task5: "3a43c1d6fda708d8c2380bbf6c70a63e20f05d278bb03b41e09fa7c06304cb5f",
+  task6: "74cf5e0a1e79dc0a95bce8abcf9fdf513b43eec67b3d7737fb667d7daaf72d1b"
+};
+
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkFlag(inputId, taskId) {
+  const val = document.getElementById(inputId).value.trim();
+  const hash = await sha256(val);
+  const resEl = document.getElementById("result" + taskId.replace('task',''));
+  if(hash === hashes[taskId]) {
+    resEl.textContent = "✅ Richtig! Punkte für dich.";
+    resEl.style.color = "#4caf50";
+  } else {
+    resEl.textContent = "❌ Nope.";
+    resEl.style.color = "#f44336";
+  }
+}
+</script>
+</body>
+</html>
