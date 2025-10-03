@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zeitung Zustell-Check</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:16px}
+  input[type="text"]{width:100%}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{border:1px solid #ddd;padding:6px;text-align:left}
+  tr.delivered td{background:#e6ffee}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  button{padding:8px 10px}
+</style>
+</head>
+<body>
+<h2>Zeitung Zustell-Check</h2>
+<div class="controls">
+  <input id="file" type="file" accept=".csv" />
+  <button id="new">Neue Liste (Beispiel)</button>
+  <button id="save">Export CSV</button>
+  <button id="filterUndeliv">Nur offen</button>
+  <button id="filterAll">Alle</button>
+  <button id="print">Druckansicht</button>
+</div>
+<p>CSV Format: <code>id;name;straße;hausnummer</code> oder <code>id;adresse</code>. Nach dem Laden: abhaken → Speicher im Browser (localStorage)</p>
+
+<table id="tbl">
+  <thead><tr><th>#</th><th>Adresse</th><th>Name</th><th>Status</th><th>Notiz</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<script>
+const tblBody = document.querySelector('#tbl tbody');
+const storageKey = 'zeitung_zustell_list_v1';
+
+function render(list){
+  tblBody.innerHTML='';
+  list.forEach((r, idx)=>{
+    const tr = document.createElement('tr');
+    if(r.status==='zugestellt') tr.classList.add('delivered');
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td>${r.strasse || r.adresse || ''} ${r.hausnummer || ''}</td>
+      <td>${r.name||''}</td>
+      <td>
+        <select data-id="${r.id}">
+          <option value="offen" ${r.status==='offen'?'selected':''}>offen</option>
+          <option value="zugestellt" ${r.status==='zugestellt'?'selected':''}>zugestellt</option>
+          <option value="nicht zuhause" ${r.status==='nicht zuhause'?'selected':''}>nicht zuhause</option>
+          <option value="kein interesse" ${r.status==='kein interesse'?'selected':''}>kein interesse</option>
+        </select>
+      </td>
+      <td><input data-idnotes="${r.id}" value="${r.note||''}" placeholder="z.B. Türklingel kaputt"></td>
+    `;
+    tblBody.appendChild(tr);
+    tr.querySelector('select').addEventListener('change', onChange);
+    tr.querySelector('input').addEventListener('input', onNote);
+  });
+}
+
+function onChange(e){
+  const id = e.target.dataset.id;
+  const list = loadList();
+  const item = list.find(x=>x.id==id);
+  if(item){ item.status = e.target.value; saveList(list); render(list); }
+}
+function onNote(e){
+  const id = e.target.dataset.idnotes;
+  const list = loadList();
+  const item = list.find(x=>x.id==id);
+  if(item){ item.note = e.target.value; saveList(list); }
+}
+
+function saveList(list){ localStorage.setItem(storageKey, JSON.stringify(list)); }
+function loadList(){ return JSON.parse(localStorage.getItem(storageKey) || '[]'); }
+
+document.getElementById('file').addEventListener('change', async (ev)=>{
+  const f = ev.target.files[0];
+  if(!f) return;
+  const txt = await f.text();
+  // Unterstützt ; und , als Trennzeichen
+  const lines = txt.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const parsed = lines.map((l, idx)=>{
+    const parts = l.split(/;|,/).map(p=>p.trim());
+    if(parts.length>=4) return {id:parts[0]||idx, name:parts[1], strasse:parts[2], hausnummer:parts[3], status:'offen'};
+    if(parts.length>=2) return {id:parts[0]||idx, adresse:parts.slice(1).join(' '), status:'offen'};
+    return {id:idx, adresse:parts[0], status:'offen'};
+  });
+  saveList(parsed);
+  render(parsed);
+});
+
+document.getElementById('new').addEventListener('click', ()=>{
+  const sample = [
+    {id:1,name:'M. Müller',strasse:'Hauptstr.',hausnummer:'1',status:'offen'},
+    {id:2,name:'S. Klein',strasse:'Hauptstr.',hausnummer:'2',status:'offen'},
+    {id:3,name:'A. Becker',strasse:'Nebenweg',hausnummer:'5',status:'offen'}
+  ];
+  saveList(sample); render(sample);
+});
+
+document.getElementById('save').addEventListener('click', ()=>{
+  const list = loadList();
+  const csv = ['id;name;straße;hausnummer;status;note', ...list.map(r=>[
+    r.id, r.name||'', r.strasse||'', r.hausnummer||'', r.status||'', (r.note||'').replace(/[\r\n]+/g,' ')
+  ].join(';'))].join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='zustellstatus.csv'; a.click();
+});
+
+document.getElementById('filterUndeliv').addEventListener('click', ()=>{
+  const list = loadList().filter(r=>r.status!=='zugestellt');
+  render(list);
+});
+document.getElementById('filterAll').addEventListener('click', ()=> render(loadList()));
+
+document.getElementById('print').addEventListener('click', ()=> {
+  window.print();
+});
+
+// initial render if data exists
+const existing = loadList();
+if(existing.length) render(existing);
+</script>
+</body>
+</html>
